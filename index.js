@@ -74,11 +74,18 @@ function S3Adapter (options, schema) {
 	this.options.path = ensureLeadingSlash(this.options.path);
 
 	// Create the s3 client
-	this.s3Client = new S3({
+	var s3Options = {
 		accessKeyId: this.options.key,
 		secretAccessKey: this.options.secret,
 		region: this.options.region,
-	});
+	};
+
+	if (this.options.endpoint) {
+		s3Options.s3ForcePathStyle = true;
+		s3Options.endpoint = this.options.endpoint;
+	}
+
+	this.s3Client = new S3(s3Options);
 
 	// Ensure the generateFilename option takes a callback
 	this.options.generateFilename = ensureCallback(this.options.generateFilename);
