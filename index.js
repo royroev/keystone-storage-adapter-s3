@@ -87,8 +87,14 @@ function S3Adapter (options, schema) {
 
 	this.s3Client = new S3(s3Options);
 
-	// Ensure the generateFilename option takes a callback
-	this.options.generateFilename = ensureCallback(this.options.generateFilename);
+	if (this.options.offGenerateFileName) {
+		this.options.generateFilename = function (file, i, callback) {
+			return callback(null, file);
+		};
+	} else {
+		// Ensure the generateFilename option takes a callback
+		this.options.generateFilename = ensureCallback(this.options.generateFilename);
+	}
 }
 
 S3Adapter.compatibilityLevel = 1;
