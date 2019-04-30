@@ -89,7 +89,7 @@ function S3Adapter (options, schema) {
 
 	if (this.options.offGenerateFileName) {
 		this.options.generateFilename = function (file, i, callback) {
-			return callback(null, file);
+			return callback(file);
 		};
 	} else {
 		// Ensure the generateFilename option takes a callback
