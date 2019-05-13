@@ -87,14 +87,8 @@ function S3Adapter (options, schema) {
 
 	this.s3Client = new S3(s3Options);
 
-	if (this.options.offGenerateFileName) {
-		this.options.generateFilename = function (file, i, callback) {
-			return callback(file);
-		};
-	} else {
-		// Ensure the generateFilename option takes a callback
-		this.options.generateFilename = ensureCallback(this.options.generateFilename);
-	}
+	// Ensure the generateFilename option takes a callback
+	this.options.generateFilename = ensureCallback(this.options.generateFilename);
 }
 
 S3Adapter.compatibilityLevel = 1;
@@ -153,7 +147,7 @@ S3Adapter.prototype.uploadFile = function (file, callback) {
 
 		// The destination path inside the S3 bucket.
 		file.path = self.options.path;
-		file.filename = filename;
+		file.filename = self.options.offGenerateFileName ? file.originalname : filename;
 		var absolutePath = self._resolveAbsolutePath(file);
 		var bucket = self._resolveBucket();
 
@@ -177,7 +171,7 @@ S3Adapter.prototype.uploadFile = function (file, callback) {
 			// We'll annotate the file with a bunch of extra properties. These won't
 			// be saved in the database unless the corresponding schema options are
 			// set.
-			file.filename = filename;
+			file.filename = self.options.offGenerateFileName ? file.originalname : filename;
 			// NOTE: The etag is double-quoted. This is correct because an ETag
 			// according to the spec is either a quoted-string or W/ followed by
 			// a quoted-string (so, for example W/"asdf" is a valid etag).
